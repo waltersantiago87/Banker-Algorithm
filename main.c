@@ -9,10 +9,7 @@
 
 #include "banker.h"
 
-static void destroy(Banker *b) {
-    free(b->available); free(b->maximum); free(b->allocation);
-    free(b->need); free(b->work); free(b->finished);
-}
+
 
 #include "arguments.h"
 
@@ -164,6 +161,6 @@ int main(int argc, char **argv) {
     if (ok) ok = read_customers(&b);
     if (ok) ok = init_matrices(&b);
     if (ok) ok = process_commands(&b);
-    destroy(&b);
+    destroy_banker(&b);
     return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

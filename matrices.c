@@ -21,3 +21,14 @@ int init_matrices(Banker *b) {
     memcpy(b->need, b->maximum, cells * sizeof(int));
     return 1;
 }
+
+void destroy_banker(Banker *b) {
+    free(b->available);
+    free(b->maximum);
+    free(b->allocation);
+    free(b->need);
+    free(b->work);
+    free(b->finished);
+
+    *b = (Banker){0};
+}
