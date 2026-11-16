@@ -44,15 +44,6 @@ int read_customers(Banker *b) {
     if (!b->customers && ok) { fprintf(stderr, "Error: customer.txt is empty\n"); ok = 0; }
     free(line); fclose(f);
     if (!ok) return 0;
-    size_t cells = b->customers * m;
-    b->allocation = calloc(cells, sizeof(int));
-    b->need = malloc(cells * sizeof(int));
-    b->work = malloc(m * sizeof(int));
-    b->finished = malloc(b->customers);
-    if (!b->allocation || !b->need || !b->work || !b->finished) {
-        fprintf(stderr, "Error: insufficient memory\n"); return 0;
-    }
-    memcpy(b->need, b->maximum, cells * sizeof(int));
     return 1;
 }
 
