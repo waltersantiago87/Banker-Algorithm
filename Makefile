@@ -4,8 +4,8 @@ CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -O2
 .PHONY: all clean
 all: banker
 
-banker: main.c arguments.c customers.c matrices.c banker.h arguments.h customers.h matrices.h
-	$(CC) $(CFLAGS) main.c arguments.c customers.c matrices.c -o banker
+banker: main.c arguments.c customers.c matrices.c safety.c banker.h arguments.h customers.h matrices.h safety.h
+	$(CC) $(CFLAGS) main.c arguments.c customers.c matrices.c safety.c -o banker
 
 clean:
 	rm -f banker
