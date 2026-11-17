@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include "commands.h"
+#include "output.h"
 #include "parser.h"
 #include "request.h"
 #include "release.h"
@@ -14,8 +15,8 @@ int process_commands(Banker *b) {
     if (!in) { perror("commands.txt"); return 0; }
     int *v = malloc(b->resources * sizeof(int));
     if (!v) { fprintf(stderr, "Error: insufficient memory\n"); fclose(in); return 0; }
-    FILE *out = fopen("result.txt", "w");
-    if (!out) { perror("result.txt"); free(v); fclose(in); return 0; }
+    FILE *out = open_result();
+    if (!out) { free(v); fclose(in); return 0; }
     char *line = NULL;
     size_t cap = 0, number = 0;
     ssize_t len;
@@ -38,10 +39,10 @@ int process_commands(Banker *b) {
     }
     if (!feof(in) && ok) { fprintf(stderr, "Error: reading commands.txt\n"); ok = 0; }
     if (!number && ok) { fprintf(stderr, "Error: commands.txt is empty\n"); ok = 0; }
-    if (ferror(out)) { fprintf(stderr, "Error: writing result.txt\n"); ok = 0; }
-    if (fclose(out) != 0) { perror("result.txt"); ok = 0; }
-    fclose(in); free(line); free(v);
-    if (!ok) remove("result.txt");
+    ok = finish_result(out, ok);
+    fclose(in);
+    free(line);
+    free(v);
     return ok;
 }
 
