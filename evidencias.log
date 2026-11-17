@@ -1,0 +1,159 @@
+=== AMBIENTE DE EXECUCAO ===
+Mon Nov 16 22:38:49 -03 2026
+Linux WalterMaia87 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+=== TESTES AUTOMATIZADOS ===
+rm -f banker
+gcc -std=c11 -Wall -Wextra -Wpedantic -O2 main.c arguments.c customers.c matrices.c safety.c request.c release.c state.c parser.c commands.c output.c -o banker
+
+Teste: exemplo do professor
+retorno: 0 (esperado: 0)
+
+Teste: comparacao com result.pdf
+OK
+Allocate to customer 0 the resources 0 2 1
+Allocate to customer 2 the resources 3 0 2
+Allocate to customer 1 the resources 2 0 0
+Allocate to customer 4 the resources 0 0 2
+Release from customer 0 the resources 0 1 1
+Allocate to customer 3 the resources 2 1 1
+MAXIMUM | ALLOCATION | NEED
+7 5 3 | 0 1 0 | 7 4 3
+3 2 2 | 2 0 0 | 1 2 2
+9 0 2 | 3 0 2 | 6 0 0
+2 2 2 | 2 1 1 | 0 1 1
+4 3 3 | 0 0 2 | 4 3 1
+AVAILABLE 3 3 2
+The resources 3 3 2 are not enough to customer 4 request 4 0 0
+Allocate to customer 1 the resources 1 0 2
+The customer 0 request 0 2 0 was denied because result in an unsafe state
+The customer 2 request 0 1 0 was denied because exceed its maximum allocation
+
+Teste: sem argumentos
+Usage: ./banker resource1 [resource2 ...]
+retorno: 1 (esperado: 1)
+
+Teste: numero incorreto de recursos
+Error: customer.txt line 1: expected 2 comma-separated nonnegative integers
+retorno: 1 (esperado: 1)
+
+Teste: argumento negativo
+Error: invalid resource argument 2
+retorno: 1 (esperado: 1)
+
+Teste: argumento nao numerico
+Error: invalid resource argument 2
+retorno: 1 (esperado: 1)
+
+Teste: argumento fora do limite de int
+Error: invalid resource argument 1
+retorno: 1 (esperado: 1)
+
+Teste: customer.txt ausente
+customer.txt: No such file or directory
+retorno: 1 (esperado: 1)
+
+Teste: commands.txt ausente
+commands.txt: No such file or directory
+retorno: 1 (esperado: 1)
+
+Teste: comando com quantidade incorreta
+Error: commands.txt line 1: invalid command or resource count (expected 3)
+retorno: 1 (esperado: 1)
+
+Teste: cliente inexistente
+Error: commands.txt line 1: invalid customer ID
+retorno: 1 (esperado: 1)
+
+Teste: pedido negativo
+Error: commands.txt line 1: invalid command or resource count (expected 3)
+retorno: 1 (esperado: 1)
+
+Teste: comando desconhecido
+Error: commands.txt line 1: invalid command or resource count (expected 3)
+retorno: 1 (esperado: 1)
+
+Teste: comando com token extra
+Error: commands.txt line 1: invalid command or resource count (expected 3)
+retorno: 1 (esperado: 1)
+
+Teste: commands.txt vazio
+Error: commands.txt is empty
+retorno: 1 (esperado: 1)
+
+Teste: linha de cliente incompleta
+Error: customer.txt line 2: expected 3 comma-separated nonnegative integers
+retorno: 1 (esperado: 1)
+
+Teste: cliente com virgula extra
+Error: customer.txt line 1: expected 3 comma-separated nonnegative integers
+retorno: 1 (esperado: 1)
+
+Teste: customer.txt vazio
+Error: customer.txt is empty
+retorno: 1 (esperado: 1)
+
+Teste: um recurso, dois clientes, rollback e liberacao invalida
+retorno: 0 (esperado: 0)
+
+Teste: rollback preserva estado e liberacao invalida nao altera matrizes
+OK
+Allocate to customer 0 the resources 1
+The customer 1 request 1 was denied because result in an unsafe state
+MAXIMUM | ALLOCATION | NEED
+3 | 1 | 2
+3 | 0 | 3
+AVAILABLE 2
+The customer 0 release 2 was denied because exceed its current allocation
+Release from customer 0 the resources 1
+MAXIMUM | ALLOCATION | NEED
+3 | 0 | 3
+3 | 0 | 3
+AVAILABLE 3
+
+Teste: um cliente, quatro recursos, capacidade zero
+retorno: 0 (esperado: 0)
+
+Teste: matrizes com quatro recursos
+OK
+
+Total de verificacoes aprovadas: 22
+=== TESTE DE ROLLBACK ===
+make: Entering directory '/home/walter/projetos/Infra-SW/Banker/wmsn'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/walter/projetos/Infra-SW/Banker/wmsn'
+PASS: rollback preservou o estado do sistema
+=== TESTES ADICIONAIS DE ERROS ===
+make: Entering directory '/home/walter/projetos/Infra-SW/Banker/wmsn'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/walter/projetos/Infra-SW/Banker/wmsn'
+Teste: comando invalido apos alocacao
+Error: commands.txt line 2: invalid command or resource count (expected 1)
+PASS: erro identificado
+Teste: caractere nulo no arquivo
+Error: commands.txt line 1: invalid command or resource count (expected 1)
+PASS: erro identificado
+Teste: impossibilidade de criar result.txt
+result.txt: Is a directory
+PASS: erro identificado
+Todos os testes adicionais passaram.
+=== TESTE DE MEMORIA COM VALGRIND ===
+==2230== Memcheck, a memory error detector
+==2230== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2230== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2230== Command: ./banker 10 5 7
+==2230== 
+==2230== 
+==2230== HEAP SUMMARY:
+==2230==     in use at exit: 0 bytes in 0 blocks
+==2230==   total heap usage: 16 allocs, 16 frees, 14,249 bytes allocated
+==2230== 
+==2230== All heap blocks were freed -- no leaks are possible
+==2230== 
+==2230== For lists of detected and suppressed errors, rerun with: -s
+==2230== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+=== TODOS OS TESTES CONCLUIDOS COM SUCESSO ===
